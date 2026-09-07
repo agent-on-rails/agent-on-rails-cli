@@ -1,0 +1,2 @@
+# Keep Cursor commits as Iman only (no Co-authored-by).
+# See control-plane .cursor/rules/git-commit-author.mdc
