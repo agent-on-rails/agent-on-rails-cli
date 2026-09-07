@@ -8,6 +8,7 @@ import click
 from rich.table import Table
 
 from aor_cli.bootstrap.layout import scaffold_control_plane, validate_control_plane
+from aor_cli.project import ProjectMeta
 
 
 @click.command("init")
@@ -33,19 +34,21 @@ def init_cmd(
     org: str,
     public: bool,
 ) -> None:
-    """Create or validate a control-plane docs+specs layout."""
+    """Create or validate an Agent On Rails project contract."""
     console = ctx.obj["console"]
     root = (path or Path.cwd()).resolve()
     product = name or root.name.removesuffix("-control-plane") or root.name
 
     if not validate_only:
         written = scaffold_control_plane(root, product, force=force)
+        meta = ProjectMeta.from_name(product)
+        meta.save(root)
         if written:
             console.print(f"[green]Scaffolded[/green] {len(written)} path(s) under {root}")
             for p in written:
                 console.print(f"  + {p.relative_to(root)}")
         else:
-            console.print(f"[dim]Nothing to write[/dim] (already present). Use --force to overwrite.")
+            console.print("[dim]Nothing to write[/dim] (already present). Use --force to overwrite.")
 
     issues = validate_control_plane(root)
     if issues:
@@ -57,7 +60,8 @@ def init_cmd(
         console.print(table)
         raise SystemExit(1)
 
-    console.print(f"[green]OK[/green] control-plane contract valid: {root}")
+    console.print(f"[green]OK[/green] Agent On Rails project contract valid: {root}")
+    console.print("Next: [bold]aor spec new \"First feature\"[/bold]  ·  [bold]aor guide[/bold]")
 
     if create_github:
         _create_github_repo(console, root, org=org, public=public)
@@ -76,7 +80,7 @@ def _create_github_repo(console, root: Path, *, org: str, public: bool) -> None:
     # Push only if user already has commits; otherwise just create empty remote link later.
     if (root / ".git").exists():
         console.print(f"Creating GitHub repo [bold]{org}/{repo_name}[/bold] …")
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
         if result.returncode != 0:
             console.print(result.stderr or result.stdout)
             raise SystemExit(result.returncode)

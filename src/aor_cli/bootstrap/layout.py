@@ -46,11 +46,11 @@ Each spec lives under `specs/<PREFIX>-NNN-slug/` with:
 Implementation agents are blocked until governing specs reach `APPROVED`.
 """
 
-README_TEMPLATE = """# {name} control plane
+README_TEMPLATE = """# {name}
 
-Authority repository for **{name}** (Agent On Rails).
+Authority repository for **{name}**, governed by [Agent On Rails](https://agent-on-rails.suherman.net).
 
-> Docs define intent. Specs define the contract. The control plane governs execution. Agents implement. Evidence proves completion.
+> Docs define intent. Specs define the contract. Agent On Rails governs execution. Agents implement. Evidence proves completion.
 
 ## Layout
 
@@ -78,6 +78,21 @@ PRODUCT_PRINCIPLES = """# Principles
 1. Docs-first — no unbounded coding agents without an approved contract.
 2. Specs are authority — code loses when it disagrees with an approved spec.
 3. Evidence before done — agents cannot self-certify completion.
+"""
+
+PRODUCT_PROPOSITION = """# Proposition
+
+{name} — product proposition (draft).
+
+Who it is for, what job it does, and what it is not.
+"""
+
+GITIGNORE = """# Agent On Rails local runtime
+.aor/packages/
+.aor/reviews/
+.venv/
+__pycache__/
+*.pyc
 """
 
 PLANS_MVP = """# MVP
@@ -157,8 +172,10 @@ def scaffold_control_plane(root: Path, name: str, *, force: bool = False) -> lis
     write("README.md", README_TEMPLATE.format(name=name))
     write("product/vision.md", PRODUCT_VISION.format(name=name))
     write("product/principles.md", PRODUCT_PRINCIPLES)
+    write("product/proposition.md", PRODUCT_PROPOSITION.format(name=name))
     write("plans/MVP.md", PLANS_MVP.format(name=name))
     write("policies/human-approval.md", POLICIES_HUMAN)
+    write(".gitignore", GITIGNORE)
     write("adr/.gitkeep", "")
     write("specs/.gitkeep", "")
     return written

@@ -1,40 +1,69 @@
-# agent-on-rails-cli
+# Agent On Rails CLI
 
-Terminal / operator UX for [Agent On Rails](https://agent-on-rails.suherman.net).
+Terminal / operator app for [Agent On Rails](https://agent-on-rails.suherman.net).
 
-Authority lives in [`agent-on-rails-control-plane`](https://github.com/agent-on-rails/agent-on-rails-control-plane). This CLI implements bootstrap and day-to-day operator flows (ADR-007, AOR-001).
-
-## Install
+**From specs to running software.** Define a contract, let agents deliver it —
+with review, escalation, and evidence before done.
 
 ```bash
-cd agent-on-rails-cli
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-aor --help
+pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git
+aor guide
+aor init my-product
 ```
 
-## Commands (MVP slice)
+Or:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agent-on-rails/agent-on-rails-cli/main/scripts/install.sh | bash
+```
+
+Full walkthrough: [`docs/getting-started.md`](./docs/getting-started.md)
+
+## Flow
+
+```text
+aor init → aor spec new → aor spec approve → aor plan → aor run → aor review
+```
 
 | Command | Purpose |
 | --- | --- |
-| `aor init` | Create or validate a control-plane repo structure (docs + specs) |
-| `aor status` | Show local control-plane health + engine/GitHub connectivity (stub-aware) |
-| `aor team` | Configure AI Team (implementor / reviewer + default & escalate models) |
-| `aor run` | Start / resume a task (engine stub until engine ships) |
-| `aor watch` | Stream task state until `FINAL_REVIEW` or failure |
-| `aor review` | Human final-review handoff in the terminal |
+| `aor guide` | How to use Agent On Rails |
+| `aor init` | Create the project contract (docs + specs, no app code) |
+| `aor spec` | Create, list, show, approve specs |
+| `aor plan` | Turn an approved spec into a bounded task |
+| `aor run` | Write a context package (or call the engine when configured) |
+| `aor status` | Specs, tasks, team, contract health |
+| `aor watch` | Follow a task |
+| `aor review` | Human final-review handoff |
+| `aor team` | Implementor / reviewer + default & escalate models |
+
+The **control plane** is the contract folder this CLI creates (`product/`,
+`specs/`, `adr/`). The product you download and run is **Agent On Rails**.
+
+## Develop from a clone
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+aor --help
+```
+
+Requires Python 3.11+.
 
 ## Authority
 
-- Specs: AOR-001 (bootstrap), AOR-003…007 (via engine later)
+- Specs: AOR-001 (bootstrap); AOR-003…007 via engine later
 - Stack: Python (ADR-007)
-- Do not invent a proprietary coding agent — headless adapters live in `agent-on-rails-agent-runtime`
+- Do not invent a proprietary coding agent — `aor run` packages work for
+  headless external agents (Cursor, Claude, Codex, …)
 
 ## Sibling repos
 
 | Repo | Role |
 | --- | --- |
-| `agent-on-rails-control-plane` | Authority |
+| `agent-on-rails-control-plane` | Authority (what / how success is proven) |
 | `agent-on-rails-engine` | Planner / state machine (coming) |
 | `agent-on-rails-github` | Issues / PRs / webhooks (coming) |
+| `agent-on-rails-agent-runtime` | Sandboxed execution (coming) |
 | `agent-on-rails-android` | Mobile monitoring (Herry) |

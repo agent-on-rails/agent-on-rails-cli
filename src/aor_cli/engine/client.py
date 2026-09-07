@@ -19,7 +19,7 @@ class EngineClient:
 
     def health(self) -> dict[str, Any]:
         if self.stubbed:
-            return {"ok": True, "mode": "stub", "message": "engine not configured"}
+            return {"ok": True, "mode": "local", "message": "engine not configured; using local project state"}
         with httpx.Client(base_url=self.base_url, timeout=self.timeout) as client:
             r = client.get("/health")
             r.raise_for_status()
@@ -32,7 +32,7 @@ class EngineClient:
                 "mode": "stub",
                 "task_id": task_id,
                 "state": "BLOCKED",
-                "message": "Set AOR_ENGINE_URL to run tasks against the engine.",
+                "message": "Local mode: run `aor run` to write a context package for a headless agent.",
             }
         with httpx.Client(base_url=self.base_url, timeout=self.timeout) as client:
             r = client.post(f"/v1/tasks/{task_id}/run")
