@@ -20,7 +20,8 @@ aor
 
 On a TTY, `aor` opens the **terminal UI** (mouse-friendly). Use `aor tui` to force it. Subcommands (`aor init`, `aor spec`, …) still work for scripts.
 
-Or from a clone:
+Or from a clone (one-time editable install, then `git pull` — no reinstall
+each time): see **[`develop-from-clone.md`](./develop-from-clone.md)**.
 
 ```bash
 git clone https://github.com/agent-on-rails/agent-on-rails-cli.git
@@ -113,6 +114,7 @@ If code disagrees with an approved spec, the spec wins until a human revises it.
 
 ## Related
 
+- Develop from a clone: [`develop-from-clone.md`](./develop-from-clone.md)
 - Authority repo: [`agent-on-rails-control-plane`](https://github.com/agent-on-rails/agent-on-rails-control-plane)
 - Full contract how-to: [`guides/using-the-control-plane.md`](https://github.com/agent-on-rails/agent-on-rails-control-plane/blob/main/guides/using-the-control-plane.md)
 - ADR-007: Python CLI-first, headless external agents

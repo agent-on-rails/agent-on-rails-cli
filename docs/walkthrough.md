@@ -35,6 +35,10 @@ Or:
 curl -fsSL https://raw.githubusercontent.com/agent-on-rails/agent-on-rails-cli/main/scripts/install.sh | bash
 ```
 
+**Following `main` / development?** Clone once with editable install — then
+`git pull` and run `aor` without reinstalling each time:
+[`develop-from-clone.md`](./develop-from-clone.md).
+
 ---
 
 ## 2. Start the TUI
@@ -218,4 +222,6 @@ aor status
 | Agent changed the contract folder | Wrong cwd — implement in the sibling **app** repo |
 | Not sure what to open | `.aor/packages/TASK-00N/prompt.md` |
 
-More detail: [`getting-started.md`](./getting-started.md) · site: [agent-on-rails.suherman.net/docs](https://agent-on-rails.suherman.net/docs)
+More detail: [`getting-started.md`](./getting-started.md) ·
+[`develop-from-clone.md`](./develop-from-clone.md) ·
+site: [agent-on-rails.suherman.net/docs](https://agent-on-rails.suherman.net/docs)

@@ -21,7 +21,8 @@ curl -fsSL https://raw.githubusercontent.com/agent-on-rails/agent-on-rails-cli/m
 ```
 
 Full walkthrough: [`docs/getting-started.md`](./docs/getting-started.md) ·
-Start → final review: [`docs/walkthrough.md`](./docs/walkthrough.md)
+Start → final review: [`docs/walkthrough.md`](./docs/walkthrough.md) ·
+Dev from clone: [`docs/develop-from-clone.md`](./docs/develop-from-clone.md)
 
 ## Flow
 
@@ -46,6 +47,9 @@ The **control plane** is the contract folder this CLI creates (`product/`,
 `specs/`, `adr/`). The product you download and run is **Agent On Rails**.
 
 ## Develop from a clone
+
+One-time editable install, then `git pull` without reinstalling each time —
+full guide: [`docs/develop-from-clone.md`](./docs/develop-from-clone.md).
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
