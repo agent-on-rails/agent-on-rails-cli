@@ -22,6 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/agent-on-rails/agent-on-rails-cli/m
 
 Full walkthrough: [`docs/getting-started.md`](./docs/getting-started.md) ·
 Start → final review: [`docs/walkthrough.md`](./docs/walkthrough.md) ·
+Linux / server: [`docs/linux-server.md`](./docs/linux-server.md) ·
 Dev from clone: [`docs/develop-from-clone.md`](./docs/develop-from-clone.md)
 
 ## Flow
