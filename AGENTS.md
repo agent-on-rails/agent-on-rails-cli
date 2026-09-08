@@ -4,7 +4,7 @@
 
 ## Boundaries
 
-- This repo is the **Agent On Rails operator UX** (`aor`). It does not own product authority, the future engine, or agent sandboxes.
+- This repo is the **Agent On Rails operator UX** (`aor`). Default on a TTY is the Textual TUI (`aor tui`). It does not own product authority, the future engine, or agent sandboxes.
 - `aor init` creates/validates the docs+specs contract (AOR-001), not application code.
 - Until `agent-on-rails-engine` exists, local mode is the product: specs, human approve, plan, context package, review. Be honest — do not pretend a remote engine is running.
 - Engine API calls go through `aor_cli.engine.client` when `AOR_ENGINE_URL` is set.

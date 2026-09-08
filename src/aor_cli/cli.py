@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sys
+
 import click
 from rich.console import Console
 
@@ -14,12 +16,15 @@ from aor_cli.commands.run import run_cmd
 from aor_cli.commands.spec import spec_cmd
 from aor_cli.commands.status import status_cmd
 from aor_cli.commands.team import team_cmd
+from aor_cli.commands.tui import tui_cmd
 from aor_cli.commands.watch import watch_cmd
 
 console = Console()
 
 EPILOG = """\
-Flow:  aor init → aor spec new → aor spec approve → aor plan → aor run → aor review
+Default:  aor            opens the terminal UI (mouse-friendly harness)
+
+Commands: aor init → aor spec new → aor spec approve → aor plan → aor run → aor review
 
 Run `aor guide` for the full how-to. The product is Agent On Rails;
 the control plane is the contract folder inside your project.
@@ -27,6 +32,7 @@ the control plane is the contract folder inside your project.
 
 
 @click.group(
+    invoke_without_command=True,
     context_settings={"help_option_names": ["-h", "--help"]},
     epilog=EPILOG,
 )
@@ -43,8 +49,15 @@ def main(ctx: click.Context, engine_url: str | None) -> None:
     ctx.ensure_object(dict)
     ctx.obj["engine_url"] = engine_url
     ctx.obj["console"] = console
+    if ctx.invoked_subcommand is None:
+        if sys.stdout.isatty():
+            from aor_cli.tui.app import run_app
+
+            raise SystemExit(run_app(engine_url=engine_url))
+        click.echo(ctx.get_help())
 
 
+main.add_command(tui_cmd, name="tui")
 main.add_command(guide_cmd, name="guide")
 main.add_command(init_cmd, name="init")
 main.add_command(spec_cmd, name="spec")

@@ -7,9 +7,12 @@ with review, escalation, and evidence before done.
 
 ```bash
 pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git
-aor guide
-aor init my-product
+aor
 ```
+
+`aor` with no arguments opens a **terminal UI** (mouse-friendly harness — same idea as OpenCode / Claude Code / Gemini). It does not run a model; it packages bounded work for whatever coding agent you already use.
+
+Commands still work for scripts: `aor init`, `aor spec`, `aor plan`, …
 
 Or:
 
@@ -27,6 +30,7 @@ aor init → aor spec new → aor spec approve → aor plan → aor run → aor 
 
 | Command | Purpose |
 | --- | --- |
+| `aor` / `aor tui` | Terminal UI (default on a TTY) |
 | `aor guide` | How to use Agent On Rails |
 | `aor init` | Create the project contract (docs + specs, no app code) |
 | `aor spec` | Create, list, show, approve specs |

@@ -17,19 +17,19 @@ The **control plane** is the contract folder inside your project
 ## Flow
 
 1. **Install** — `pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git`
-2. **Init** — `aor init my-product` creates the docs+specs contract (no app code).
-3. **Write a spec** — `aor spec new "Short title"` (or edit `specs/` by hand).
-4. **Human approve** — `aor spec approve PREFIX-001` (agents cannot skip this).
-5. **Plan** — `aor plan PREFIX-001` turns the spec into a bounded task.
-6. **Run** — `aor run PREFIX-001` writes a context package for a headless agent
-   (Cursor, Claude, Codex, …). The engine will take this over when it ships.
-7. **Review** — `aor review TASK-001` is the human final-review handoff.
+2. **Open the TUI** — `aor` (mouse-friendly harness, like OpenCode / Claude Code)
+3. **Init** — in the TUI press Init, or `aor init my-product` (docs+specs, no app code).
+4. **Write a spec** — New spec in the TUI, or `aor spec new "Short title"`.
+5. **Human approve** — Approve in the TUI, or `aor spec approve PREFIX-001`.
+6. **Plan / Run** — packages a bounded task for Cursor, Claude, Codex, Gemini, …
+7. **Review** — human final-review handoff.
 8. **Evidence** — a spec is not DONE because an agent said so.
 
 ## Commands
 
 | Command | Purpose |
 | --- | --- |
+| `aor` / `aor tui` | Terminal UI (default on a TTY) |
 | `aor init` | Bootstrap a project contract |
 | `aor spec` | Create, list, show, approve specs |
 | `aor plan` | Build a task from an approved spec |

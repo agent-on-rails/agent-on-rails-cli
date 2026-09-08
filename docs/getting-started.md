@@ -15,9 +15,10 @@ Requires Python 3.11+. Prefer [pipx](https://pipx.pypa.io/):
 
 ```bash
 pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git
-aor --help
-aor guide
+aor
 ```
+
+On a TTY, `aor` opens the **terminal UI** (mouse-friendly). Use `aor tui` to force it. Subcommands (`aor init`, `aor spec`, …) still work for scripts.
 
 Or from a clone:
 
@@ -43,13 +44,14 @@ init → spec → approve → plan → run → review → evidence → done
 
 | Step | Command | Who |
 | --- | --- | --- |
-| Bootstrap the project contract | `aor init my-product` | Human |
-| Write a spec (`spec.md` + `acceptance.md` + `evidence.md`) | `aor spec new "Short title"` | Human / draft agent |
-| Approve the contract | `aor spec approve PREFIX-001` | **Human only** |
-| Turn the spec into a bounded task | `aor plan PREFIX-001` | Agent On Rails |
-| Package the task for a coding agent | `aor run PREFIX-001` | Agent On Rails |
+| Open the terminal UI | `aor` | Human |
+| Bootstrap the project contract | Init in TUI, or `aor init my-product` | Human |
+| Write a spec (`spec.md` + `acceptance.md` + `evidence.md`) | New spec in TUI, or `aor spec new "Short title"` | Human / draft agent |
+| Approve the contract | Approve in TUI, or `aor spec approve PREFIX-001` | **Human only** |
+| Turn the spec into a bounded task | Plan in TUI, or `aor plan PREFIX-001` | Agent On Rails |
+| Package the task for a coding agent | Run in TUI, or `aor run PREFIX-001` | Agent On Rails |
 | Implement in the **sibling app repo** | Cursor / Claude / Codex / … | Implementor |
-| Human final review | `aor review TASK-001 --approve` | **Human only** |
+| Human final review | Review in TUI, or `aor review TASK-001 --approve` | **Human only** |
 
 Implementation agents are blocked until the spec is `APPROVED`.
 Implementors never mark their own work `DONE`.
