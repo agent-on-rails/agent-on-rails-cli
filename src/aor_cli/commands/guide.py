@@ -27,6 +27,7 @@ The **control plane** is the contract folder inside your project
 
 Step-by-step (start → final review): https://github.com/agent-on-rails/agent-on-rails-cli/blob/main/docs/walkthrough.md
 
+**What to set up (checklist):** https://github.com/agent-on-rails/agent-on-rails-cli/blob/main/docs/what-to-setup.md
 
 ## Commands
 

@@ -23,6 +23,8 @@ On a TTY, `aor` opens the **terminal UI** (mouse-friendly). Use `aor tui` to for
 **Linux / agent host (Teknopus-style):** step-by-step install + first loop →
 **[`linux-server.md`](./linux-server.md)**.
 
+**What to set up (checklist):** **[`what-to-setup.md`](./what-to-setup.md)**.
+
 **macOS / Windows wizard:** [agent-on-rails-desktop](https://github.com/agent-on-rails/agent-on-rails-desktop)
 (onboarding only; day-to-day work still uses `aor`).
 
