@@ -25,6 +25,9 @@ The **control plane** is the contract folder inside your project
 7. **Review** — human final-review handoff.
 8. **Evidence** — a spec is not DONE because an agent said so.
 
+Step-by-step (start → final review): https://github.com/agent-on-rails/agent-on-rails-cli/blob/main/docs/walkthrough.md
+
+
 ## Commands
 
 | Command | Purpose |

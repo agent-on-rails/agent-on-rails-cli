@@ -20,7 +20,8 @@ Or:
 curl -fsSL https://raw.githubusercontent.com/agent-on-rails/agent-on-rails-cli/main/scripts/install.sh | bash
 ```
 
-Full walkthrough: [`docs/getting-started.md`](./docs/getting-started.md)
+Full walkthrough: [`docs/getting-started.md`](./docs/getting-started.md) ·
+Start → final review: [`docs/walkthrough.md`](./docs/walkthrough.md)
 
 ## Flow
 

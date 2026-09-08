@@ -58,21 +58,27 @@ Implementors never mark their own work `DONE`.
 
 ## Walkthrough
 
+End-to-end from install until a human can do final review (TUI + commands):
+
+→ **[`docs/walkthrough.md`](./walkthrough.md)**
+
+Short command cheat sheet:
+
 ```bash
 # 1. New project (docs + specs only — no application code)
-aor init ./lakuyo --name Lakuyo
-cd lakuyo
+aor init ./followup --name FollowUp
+cd followup
 
 # 2. Draft a contract
-aor spec new "Checkout totals" --repo lakuyo-app
-# edit specs/LAKUYO-001-checkout-totals/*.md
+aor spec new "Add contact and follow-up date" --repo followup-web
+# edit specs/FOLLOW-001-*/{spec,acceptance,evidence}.md
 
 # 3. Human gate
-aor spec approve LAKUYO-001
+aor spec approve FOLLOW-001
 
 # 4. Bounded task + context package
-aor plan LAKUYO-001
-aor run LAKUYO-001
+aor plan FOLLOW-001
+aor run FOLLOW-001
 # open .aor/packages/TASK-001/prompt.md in your coding agent
 
 # 5. After the PR and tests exist
