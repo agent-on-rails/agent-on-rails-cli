@@ -20,6 +20,12 @@ aor
 
 On a TTY, `aor` opens the **terminal UI** (mouse-friendly). Use `aor tui` to force it. Subcommands (`aor init`, `aor spec`, …) still work for scripts.
 
+**Linux / agent host (Teknopus-style):** step-by-step install + first loop →
+**[`linux-server.md`](./linux-server.md)**.
+
+**macOS / Windows wizard:** [agent-on-rails-desktop](https://github.com/agent-on-rails/agent-on-rails-desktop)
+(onboarding only; day-to-day work still uses `aor`).
+
 Or from a clone (one-time editable install, then `git pull` — no reinstall
 each time): see **[`develop-from-clone.md`](./develop-from-clone.md)**.
 
