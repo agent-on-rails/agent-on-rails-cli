@@ -19,11 +19,16 @@ The **control plane** is the contract folder inside your project
 1. **Install** — `pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git`
 2. **Open the TUI** — `aor` (mouse-friendly harness, like OpenCode / Claude Code)
 3. **Init** — in the TUI press Init, or `aor init my-product` (docs+specs, no app code).
-4. **Write a spec** — New spec in the TUI, or `aor spec new "Short title"`.
-5. **Human approve** — Approve in the TUI, or `aor spec approve PREFIX-001`.
-6. **Plan / Run** — packages a bounded task for Cursor, Claude, Codex, Gemini, …
-7. **Review** — human final-review handoff.
-8. **Evidence** — a spec is not DONE because an agent said so.
+4. **Gather specs (optional)** — `aor gather run "…requirements…"` extracts a SurveyDesk-shaped
+   outline via OpenAI-compatible AI (default portal:
+   https://ai.dentalimplantsandveneers.com.au/), **asks you to confirm**, then writes
+   `specs/product|requirements|domain|api|adr|acceptance|regeneration/`.
+   Edit with `aor gather apply --edit`. Use `--stub` offline.
+5. **Write / refine a spec** — New spec in the TUI, or `aor spec new "Short title"`.
+6. **Human approve** — Approve in the TUI, or `aor spec approve PREFIX-001`.
+7. **Plan / Run** — packages a bounded task for Cursor, Claude, Codex, Gemini, …
+8. **Review** — human final-review handoff.
+9. **Evidence** — a spec is not DONE because an agent said so.
 
 Step-by-step (start → final review): https://github.com/agent-on-rails/agent-on-rails-cli/blob/main/docs/walkthrough.md
 
@@ -35,6 +40,7 @@ Step-by-step (start → final review): https://github.com/agent-on-rails/agent-o
 | --- | --- |
 | `aor` / `aor tui` | Terminal UI (default on a TTY) |
 | `aor init` | Bootstrap a project contract |
+| `aor gather` | NL requirements → confirm → SurveyDesk-shaped specs |
 | `aor spec` | Create, list, show, approve specs |
 | `aor plan` | Build a task from an approved spec |
 | `aor run` | Package (and later execute) a bounded task |
@@ -42,6 +48,16 @@ Step-by-step (start → final review): https://github.com/agent-on-rails/agent-o
 | `aor watch` | Follow a task until final review |
 | `aor review` | Human approve / reject |
 | `aor team` | Configure implementor / reviewer / models |
+
+## LLM for gather (ADR-003)
+
+```bash
+export AOR_LLM_BASE_URL=https://ai.dentalimplantsandveneers.com.au/v1
+export AOR_LLM_API_KEY=…          # DIV gateway token or other Bearer key
+export AOR_LLM_MODEL=writer       # optional
+```
+
+Or `~/.config/agent-on-rails/llm.yaml`. Without a key, `aor gather run` uses `--stub`.
 
 ## Authority
 

@@ -8,6 +8,7 @@ import click
 from rich.console import Console
 
 from aor_cli import __version__
+from aor_cli.commands.gather import gather_cmd
 from aor_cli.commands.guide import guide_cmd
 from aor_cli.commands.init import init_cmd
 from aor_cli.commands.plan import plan_cmd
@@ -24,7 +25,7 @@ console = Console()
 EPILOG = """\
 Default:  aor            opens the terminal UI (mouse-friendly harness)
 
-Commands: aor init → aor spec new → aor spec approve → aor plan → aor run → aor review
+Commands: aor init → aor gather run → aor spec approve → aor plan → aor run → aor review
 
 Run `aor guide` for the full how-to. The product is Agent On Rails;
 the control plane is the contract folder inside your project.
@@ -60,6 +61,7 @@ def main(ctx: click.Context, engine_url: str | None) -> None:
 main.add_command(tui_cmd, name="tui")
 main.add_command(guide_cmd, name="guide")
 main.add_command(init_cmd, name="init")
+main.add_command(gather_cmd, name="gather")
 main.add_command(spec_cmd, name="spec")
 main.add_command(plan_cmd, name="plan")
 main.add_command(status_cmd, name="status")

@@ -75,6 +75,26 @@ You should see the Agent On Rails terminal UI (mouse works). Footer keys:
 
 This creates docs + specs only (`product/`, `specs/`, `adr/`, `AGENTS.md`, …). **No application code** goes here. That is the control plane — the contract, not the app.
 
+### 3b. Gather specs from natural language (optional, AOR-010)
+
+Paste product requirements and generate a **SurveyDesk-shaped** pack
+(`specs/product`, `requirements`, `domain`, `api`, `adr`, `acceptance`, `regeneration`):
+
+```bash
+export AOR_LLM_BASE_URL=https://ai.dentalimplantsandveneers.com.au/v1
+export AOR_LLM_API_KEY=…   # gateway Bearer token from DIV AI / compatible provider
+
+aor gather run "Build a local survey desk: mobile operators, anonymous web, SQLite API"
+# shows outline → confirm y/N → writes files
+
+# Or edit the outline first:
+aor gather run --file ./requirements.md --edit
+aor gather apply --edit
+```
+
+Without an API key, add `--stub` for an offline heuristic extract. Gathering only drafts
+specs — humans still approve before implementation.
+
 Check:
 
 ```bash

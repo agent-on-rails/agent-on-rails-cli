@@ -29,7 +29,7 @@ Dev from clone: [`docs/develop-from-clone.md`](./docs/develop-from-clone.md)
 ## Flow
 
 ```text
-aor init → aor spec new → aor spec approve → aor plan → aor run → aor review
+aor init → aor gather run → aor spec approve → aor plan → aor run → aor review
 ```
 
 | Command | Purpose |
@@ -37,6 +37,7 @@ aor init → aor spec new → aor spec approve → aor plan → aor run → aor 
 | `aor` / `aor tui` | Terminal UI (default on a TTY) |
 | `aor guide` | How to use Agent On Rails |
 | `aor init` | Create the project contract (docs + specs, no app code) |
+| `aor gather` | Natural-language requirements → confirm → SurveyDesk-shaped specs |
 | `aor spec` | Create, list, show, approve specs |
 | `aor plan` | Turn an approved spec into a bounded task |
 | `aor run` | Write a context package (or call the engine when configured) |
