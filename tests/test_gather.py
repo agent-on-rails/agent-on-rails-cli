@@ -32,8 +32,17 @@ REFERENCE_FILES = [
     "specs/acceptance/lifecycle.feature",
     "specs/regeneration/prompts/REGENERATE.md",
     "specs/regeneration/prompts/parallel/P1-api.md",
+    "specs/regeneration/prompts/parallel/P5-root-scripts.md",
     "specs/regeneration/prompts/parallel/P6-tests.md",
     "specs/regeneration/contracts/theme.css.txt",
+    "specs/regeneration/contracts/shell-demo-pitfalls.md",
+    "specs/regeneration/contracts/mobile-operator-ux.md",
+    "brand/README.md",
+    "brand/surveydesk-logo.png",
+    "brand/surveydesk-full.jpg",
+    ".gitignore",
+    "CLEANUP.md",
+    "AGENTS.md",
 ]
 
 
@@ -57,12 +66,24 @@ def test_stub_extract_and_writer(tmp_path: Path) -> None:
         assert rel in rels
     assert "AGENTS.md" in rels
     assert "specs/regeneration/source-requirements.md" in rels
+    assert "brand/surveydesk-logo.png" in rels
+    assert "package.json" in rels
+    assert ".gitignore" in rels
+    pkg = json.loads((tmp_path / "package.json").read_text(encoding="utf-8"))
+    assert pkg["allowScripts"]["better-sqlite3"] is True
+    assert "execute:specs" in pkg["scripts"]
+    gitignore = (tmp_path / ".gitignore").read_text(encoding="utf-8")
+    assert "apps/" in gitignore
     vision = (tmp_path / "specs" / "product" / "vision.md").read_text(encoding="utf-8")
     assert "SurveyDesk" in vision
     openapi = (tmp_path / "specs" / "api" / "openapi.yaml").read_text(encoding="utf-8")
     assert "/v1/surveys" in openapi
     assert (tmp_path / ".aor").exists() is False  # writer does not create outline
-
+    pitfalls = (
+        tmp_path / "specs" / "regeneration" / "contracts" / "shell-demo-pitfalls.md"
+    ).read_text(encoding="utf-8")
+    assert "EADDRINUSE" in pitfalls
+    assert "bash 3.2" in pitfalls
 
 def test_reference_pack_force_replaces_stub_files(tmp_path: Path) -> None:
     stale = tmp_path / "specs" / "requirements" / "SD-001-build-a-product-called-surveydesk-a.md"

@@ -39,10 +39,16 @@ def _write_reference_pack(root: Path, outline: SpecOutline, *, force: bool) -> l
     dest_specs.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(src_specs, dest_specs, dirs_exist_ok=True)
     written = [p for p in dest_specs.rglob("*") if p.is_file()]
-    agents_src = TEMPLATE_ROOT / "AGENTS.md"
-    if agents_src.is_file() and (force or not (root / "AGENTS.md").exists()):
-        shutil.copy2(agents_src, root / "AGENTS.md")
-        written.append(root / "AGENTS.md")
+
+    # Seed non-specs project files that regen assumes exist (brand, gitignore, cleanup).
+    written.extend(_copy_template_file(root, "AGENTS.md", force=force))
+    written.extend(_copy_template_tree(root, "brand", force=force))
+    written.extend(_copy_template_file(root, ".gitignore", force=force))
+    written.extend(_copy_template_file(root, "CLEANUP.md", force=force))
+    written.extend(_copy_template_tree(root, "data", force=force))
+    written.extend(_ensure_root_package_json(root, force=force))
+    written.extend(_ensure_env_example(root, force=force))
+
     src_cap = root / "specs" / "regeneration" / "source-requirements.md"
     src_cap.parent.mkdir(parents=True, exist_ok=True)
     src_cap.write_text(
@@ -55,6 +61,83 @@ def _write_reference_pack(root: Path, outline: SpecOutline, *, force: bool) -> l
     )
     written.append(src_cap)
     return written
+
+
+def _copy_template_file(root: Path, rel: str, *, force: bool) -> list[Path]:
+    src = TEMPLATE_ROOT / rel
+    dest = root / rel
+    if not src.is_file():
+        return []
+    if dest.exists() and not force:
+        return []
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    return [dest]
+
+
+def _copy_template_tree(root: Path, rel: str, *, force: bool) -> list[Path]:
+    src = TEMPLATE_ROOT / rel
+    dest = root / rel
+    if not src.is_dir():
+        return []
+    if force and dest.exists():
+        shutil.rmtree(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(src, dest, dirs_exist_ok=True)
+    return [p for p in dest.rglob("*") if p.is_file()]
+
+
+def _ensure_root_package_json(root: Path, *, force: bool) -> list[Path]:
+    dest = root / "package.json"
+    if dest.exists() and not force:
+        return []
+    # Minimal scaffold so execute:specs / allowScripts exist before P5 finishes.
+    dest.write_text(
+        "{\n"
+        '  "name": "survey-desk",\n'
+        '  "version": "0.1.0",\n'
+        '  "private": true,\n'
+        '  "description": "SurveyDesk — local-first survey demo (API + web + native operators)",\n'
+        '  "workspaces": ["apps/api", "apps/web", "packages/*"],\n'
+        '  "scripts": {\n'
+        '    "demo": "bash scripts/demo.sh",\n'
+        '    "demo:api": "npm run dev -w @survey-desk/api",\n'
+        '    "demo:web": "npm run dev -w @surveydesk/web",\n'
+        '    "demo:ios": "bash scripts/demo-ios-simulator.sh",\n'
+        '    "demo:android": "bash scripts/demo-android-emulator.sh",\n'
+        '    "test:acceptance": "npm --prefix tests test",\n'
+        '    "execute:specs": "bash specs/regeneration/run-parallel.sh",\n'
+        '    "regen:parallel": "npm run execute:specs"\n'
+        "  },\n"
+        '  "engines": { "node": ">=20" },\n'
+        '  "allowScripts": {\n'
+        '    "better-sqlite3": true,\n'
+        '    "esbuild": true\n'
+        "  }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    return [dest]
+
+
+def _ensure_env_example(root: Path, *, force: bool) -> list[Path]:
+    dest = root / ".env-example"
+    if dest.exists() and not force:
+        return []
+    dest.write_text(
+        "# SurveyDesk local demo environment\n"
+        "# Copy to .env: cp .env-example .env\n\n"
+        "SURVEY_DESK_API_HOST=127.0.0.1\n"
+        "SURVEY_DESK_API_PORT=8787\n"
+        "SURVEY_DESK_DATABASE_PATH=./data/survey-desk.sqlite\n"
+        "SURVEY_DESK_WEB_PORT=3091\n"
+        "NEXT_PUBLIC_SURVEY_DESK_API_URL=http://127.0.0.1:8787\n\n"
+        "# Android emulator → host API: http://10.0.2.2:8787\n"
+        "# Public respondent URLs (host browser): http://127.0.0.1:3091\n"
+        "SURVEY_DESK_OPERATOR_TOKEN=\n",
+        encoding="utf-8",
+    )
+    return [dest]
 
 
 def _write_generic(root: Path, outline: SpecOutline, *, force: bool) -> list[Path]:

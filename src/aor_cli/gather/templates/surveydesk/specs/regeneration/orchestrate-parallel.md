@@ -15,6 +15,7 @@
 - Demo mobile via **iPhone + iPad Simulators** and **Android phone + tablet Emulators**.
 - **Brand:** use `brand/surveydesk-full.jpg` (full + text) and `brand/surveydesk-logo.png` (logo only, transparent); shared theme tokens from `brand/README.md` / `specs/product/brand.md` on every UI.
 - **Mobile UX contract:** `specs/regeneration/contracts/mobile-operator-ux.md` (sidebar selection, JDK 17, Android `10.0.2.2` API, dual devices).
+- **Shell / demo pitfalls:** `specs/regeneration/contracts/shell-demo-pitfalls.md` (bash 3.2 `set -u`, `$var…` ellipsis, empty arrays, `demo.sh` EADDRINUSE reuse, root `allowScripts`).
 - Do **not** edit files outside your OWNED PATHS. Do **not** modify originals under `brand/` — copy into app asset folders.
 - Do **not** invent analytics-copilot / SaaS multi-tenant features.
 - Author commits as `Iman Suherman <iman.suherman@gmail.com>` only if committing; no Co-authored-by.

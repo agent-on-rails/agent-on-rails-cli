@@ -1,0 +1,21 @@
+# Agent On Rails local runtime
+.aor/packages/
+.aor/reviews/
+.venv/
+__pycache__/
+*.pyc
+
+# Generated SurveyDesk trees (do not commit)
+apps/
+packages/
+tests/
+
+# Local env + database
+.env
+data/*.sqlite
+data/*.sqlite-*
+node_modules/
+dist/
+.next/
+*.log
+.DS_Store

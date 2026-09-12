@@ -30,7 +30,10 @@ Do **not** edit `apps/web`, `apps/ios`, `apps/android`, `tests/`, `scripts/`, or
 4. Aggregates per `specs/domain/results.md` (instant = fresh read on each GET)
 5. Optional `X-SurveyDesk-Token` when `SURVEY_DESK_OPERATOR_TOKEN` is set
 6. `apps/api/package.json` with `dev` / `start` / `build` scripts
-7. README in `apps/api` with how to run locally
+7. Document that root (or api) `package.json` needs **`allowScripts.better-sqlite3: true`** so monorepo `npm install` builds the native module (P5 owns root; still note it in `apps/api/README.md`)
+8. Export a testable app factory (`createApp` / `createHonoApp` + `openDatabase`) for P6 in-process tests — avoid listening as a side effect of the library entry
+9. README in `apps/api` with how to run locally
+10. CORS enabled for local web (`http://127.0.0.1:3091`)
 
 ## Done when
 - `apps/api` boots and `GET /health` returns `{ ok: true }` within the 15-minute overall regen budget (Wave 1 share ≤ 10m)

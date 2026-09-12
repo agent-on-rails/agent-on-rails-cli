@@ -41,11 +41,21 @@
 
 ## Demo scripts (P5) — MUST
 
+**Also follow** `specs/regeneration/contracts/shell-demo-pitfalls.md` (bash 3.2 `set -u`, unicode ellipsis, EADDRINUSE reuse, `allowScripts`, `.gitignore`).
+
+### `scripts/demo.sh`
+
+- Start API (8787) + web (3091); print URLs.
+- If `/health` is healthy **and** web responds → reuse (do not double-bind → EADDRINUSE).
+- If port busy but unhealthy → free listeners then start.
+- Fail fast if a child exits immediately after launch.
+
 ### `scripts/demo-ios-simulator.sh`
 
 - Resolve UDIDs with UUID regex (device names like `iPad mini (A17 Pro)` contain parentheses — do not parse the first `(…)` as UDID).
 - Build + install + launch on **both** an iPhone and an iPad Simulator when available.
 - Scheme `SurveyDesk`, bundle `local.surveydesk.ios`.
+- Echo strings: use `${udid}...` — never bare `$udid…` (unicode ellipsis → unbound variable on bash 3.2 + `set -u`).
 
 ### `scripts/demo-android-emulator.sh`
 
@@ -54,6 +64,8 @@
 - If missing, create/document tablet AVD (API 35, ~2560×1600 @ 320dpi landscape) alongside phone.
 - Detect already-running AVDs via **adb serial / AVD name** (not fragile `pgrep`).
 - **Critical adb stdin pitfall:** `adb` reads stdin. Never call `adb shell` / `adb -s …` inside a `while read` over `adb devices` output — it consumes the next serial and the wait loop sticks at `1/2 ready`. Always `adb … </dev/null` (helper `adb_cmd`) and/or buffer serials into an array before nested adb calls.
+- **Empty arrays:** before `"${serials[@]}"` / `"${device_lines[@]}"`, guard with `((${#arr[@]} > 0))` (bash 3.2 + `set -u`).
+- Echo strings: use `${avd}...` — never bare `$avd…`.
 - For **each** ready emulator serial: optional `adb -s SERIAL reverse` for 8787/3091 (fallback only; app API uses `10.0.2.2`).
 - Always `:app:assembleDebug`, then per serial: `am force-stop` → `adb install -r` of **that** APK → re-apply reverse → `am start -S` (cold start). Never resume a snapshot’s previous SurveyDesk task; never rely on Gradle `installDebug` alone across multiple devices.
 - Warn if host `http://127.0.0.1:8787/health` fails.
@@ -62,6 +74,8 @@
 ### Root npm scripts
 
 - `demo`, `demo:ios`, `demo:android`, `test:acceptance` as today.
+- Root `allowScripts` for `better-sqlite3` and `esbuild`.
+- `.gitignore` must list `apps/`, `packages/`, `tests/`.
 - `.env-example`: Android API note `http://10.0.2.2:8787` (emulator→host); copied web origin `http://127.0.0.1:3091` (host browser).
 
 ## Definition of done (mobile)
@@ -70,3 +84,4 @@
 - `npm run demo:android` launches on phone **and** tablet emulators.
 - Transparent logo blends on `#F0F4F8` / white chrome.
 - Tablet/iPad sidebar opens survey detail when a row is tapped (no blank detail pane).
+- Second `npm run demo` while servers are healthy does not EADDRINUSE.
