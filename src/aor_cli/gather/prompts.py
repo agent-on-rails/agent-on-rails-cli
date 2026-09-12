@@ -41,8 +41,19 @@ Rules:
 - Prefer local-first / demoable scopes unless the user asked for cloud SaaS.
 - English product docs.
 - Requirements must use SHALL / SHALL NOT language.
-- Include at least 4 requirements, 2 domains, 2 ADRs, 2 acceptance features when the
-  prompt has enough signal; invent reasonable drafts and mark assumptions in notes.
+- If the operator describes SurveyDesk (local-first survey desk, FormSpec, native
+  iOS/Android operators, anonymous Next.js web, SQLite API), you MUST use
+  product_name SurveyDesk, requirement_prefix SD, and these exact requirement IDs
+  and titles: SD-001 Product surfaces; SD-002 Local-first runtime; SD-003 Survey
+  entity and lifecycle; SD-004 FormSpec — drag-and-drop form schema; SD-005 Local
+  API + SQLite persistence; SD-006 Anonymous public respondent web; SD-007 Instant
+  results; SD-008 Mobile app — survey list and control; SD-009 Mobile app — form
+  builder; SD-010 Mobile app — start / end survey workflow; SD-011 Mobile app —
+  results view; SD-012 Acceptance tests and demo script. Domains: survey, form-spec,
+  response, results, lifecycle. Do not invent sentence-fragment requirements.
+- Otherwise include at least 4 requirements, 2 domains, 2 ADRs, 2 acceptance features
+  when the prompt has enough signal; invent reasonable drafts and mark assumptions
+  in notes.
 """
 
 

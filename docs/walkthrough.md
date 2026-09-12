@@ -92,6 +92,11 @@ aor gather run --file ./requirements.md --edit
 aor gather apply --edit
 ```
 
+If the pasted text is **SurveyDesk** (local-first survey desk, FormSpec, native
+iOS/Android operators, anonymous web), gather writes the SurveyDesk **reference
+pack** (SD-001…SD-012, FormSpec domain, full OpenAPI, ADR-001…009, P1–P6) instead
+of sentence-split stubs. Use `--force` to replace a previous draft `specs/` tree.
+
 Without an API key, add `--stub` for an offline heuristic extract. Gathering only drafts
 specs — humans still approve before implementation.
 

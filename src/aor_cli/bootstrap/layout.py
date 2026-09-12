@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -126,6 +127,11 @@ class ValidationIssue:
     message: str
 
 
+# AOR-001 bundles: specs/AOR-001-slug/. SurveyDesk gather (AOR-010) uses
+# specs/{product,requirements,domain,api,adr,acceptance,regeneration}/ — not bundles.
+SPEC_BUNDLE_DIR_RE = re.compile(r"^[A-Z][A-Z0-9]*-[0-9]{3}(?:-.+)?$")
+
+
 def validate_control_plane(root: Path) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     if not root.exists():
@@ -144,6 +150,8 @@ def validate_control_plane(root: Path) -> list[ValidationIssue]:
     if specs.is_dir():
         children = [p for p in specs.iterdir() if p.is_dir() and not p.name.startswith(".")]
         for child in children:
+            if not SPEC_BUNDLE_DIR_RE.match(child.name):
+                continue
             for required in ("spec.md", "acceptance.md", "evidence.md"):
                 if not (child / required).is_file():
                     issues.append(

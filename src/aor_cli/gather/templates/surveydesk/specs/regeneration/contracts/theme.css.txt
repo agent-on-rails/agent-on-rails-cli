@@ -1,0 +1,18 @@
+/* SurveyDesk theme — copy into apps/web as appropriate (e.g. app/globals.css).
+ * Source of truth: brand/README.md
+ */
+:root {
+  --sd-ink: #001838;
+  --sd-primary: #0878f8;
+  --sd-primary-pressed: #0068e8;
+  --sd-accent-green: #10a868;
+  --sd-accent-purple: #7828f8;
+  --sd-rating: #f8b000;
+  --sd-muted: #6b7c93;
+  --sd-border: #d0d8e4;
+  --sd-surface: #ffffff;
+  --sd-surface-subtle: #f0f4f8;
+  --sd-danger: #e11d48;
+  --sd-success: #10a868;
+  --sd-font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+}

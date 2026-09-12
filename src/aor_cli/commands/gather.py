@@ -112,6 +112,12 @@ def gather_cmd(ctx: click.Context) -> None:
 )
 @click.option("--stub", is_flag=True, help="Offline heuristic extract (no LLM).")
 @click.option("--yes", "-y", is_flag=True, help="Skip confirm (still saves outline first).")
+@click.option(
+    "--outline-only",
+    is_flag=True,
+    help="Save outline and exit without writing specs (for GUI / review).",
+)
+@click.option("--json", "as_json", is_flag=True, help="Print outline as JSON (machine-readable).")
 @click.option("--edit", is_flag=True, help="Open outline JSON in $EDITOR before confirm.")
 @click.option("--force", is_flag=True, help="Overwrite existing generated files.")
 @click.pass_context
@@ -123,6 +129,8 @@ def gather_run(
     profile: str,
     stub: bool,
     yes: bool,
+    outline_only: bool,
+    as_json: bool,
     edit: bool,
     force: bool,
 ) -> None:
@@ -136,30 +144,45 @@ def gather_run(
 
     cfg = LlmConfig.load()
     use_stub = stub or not cfg.configured
-    if use_stub and not stub:
+    if use_stub and not stub and not as_json:
         console.print(
             "[yellow]No AOR_LLM_API_KEY[/yellow] — using stub extract. "
             f"Set key for {cfg.base_url} (DIV AI gateway token or other OpenAI-compatible key)."
         )
 
-    console.print(f"[dim]Extracting outline[/dim] (profile={profile}, stub={use_stub}) …")
+    if not as_json:
+        console.print(f"[dim]Extracting outline[/dim] (profile={profile}, stub={use_stub}) …")
     outline = extract_outline(text, stub=use_stub)
     outline_path = _save_outline(project, outline)
-    console.print(f"Outline saved: [bold]{outline_path}[/bold]")
+    if not as_json:
+        console.print(f"Outline saved: [bold]{outline_path}[/bold]")
 
     if edit:
         console.print("Opening outline in editor …")
         outline = _edit_outline(outline_path)
         _save_outline(project, outline)
 
-    _print_outline(console, outline)
-    console.print(
-        Panel(
-            "This will write a SurveyDesk-like tree under specs/ "
-            "(product, requirements, domain, api, adr, acceptance, regeneration).",
-            title="Confirm",
+    if as_json:
+        click.echo(json.dumps(outline.to_dict(), indent=2))
+    else:
+        _print_outline(console, outline)
+
+    if outline_only:
+        if not as_json:
+            console.print(
+                "[dim]Outline only — specs not written.[/dim] "
+                f"Confirm later with [bold]aor gather apply --root {project}[/bold]"
+            )
+        return
+
+    if not as_json:
+        console.print(
+            Panel(
+                "This will write a SurveyDesk-like tree under specs/ "
+                "(product, requirements, domain, api, adr, acceptance, regeneration).",
+                title="Confirm",
+            )
         )
-    )
     if not yes and not click.confirm("Generate the full specs pack now?", default=False):
         console.print(
             "[yellow]Aborted.[/yellow] Edit the outline, then run:\n"

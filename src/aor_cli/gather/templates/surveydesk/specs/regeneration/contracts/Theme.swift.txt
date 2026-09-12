@@ -1,0 +1,18 @@
+// SurveyDesk theme — copy into apps/ios as Theme.swift (or Asset Catalog colors).
+// Source of truth: brand/README.md
+import SwiftUI
+
+enum SurveyDeskTheme {
+  static let ink = Color(red: 0/255, green: 24/255, blue: 56/255)            // #001838
+  static let primary = Color(red: 8/255, green: 120/255, blue: 248/255)     // #0878F8
+  static let primaryPressed = Color(red: 0/255, green: 104/255, blue: 232/255) // #0068E8
+  static let accentGreen = Color(red: 16/255, green: 168/255, blue: 104/255) // #10A868
+  static let accentPurple = Color(red: 120/255, green: 40/255, blue: 248/255) // #7828F8
+  static let rating = Color(red: 248/255, green: 176/255, blue: 0/255)      // #F8B000
+  static let muted = Color(red: 107/255, green: 124/255, blue: 147/255)     // #6B7C93
+  static let border = Color(red: 208/255, green: 216/255, blue: 228/255)    // #D0D8E4
+  static let surface = Color.white
+  static let surfaceSubtle = Color(red: 240/255, green: 244/255, blue: 248/255) // #F0F4F8
+  static let danger = Color(red: 225/255, green: 29/255, blue: 72/255)      // #E11D48
+  static let success = accentGreen
+}

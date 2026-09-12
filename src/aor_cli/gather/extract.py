@@ -6,6 +6,7 @@ import json
 import re
 from typing import Any
 
+from aor_cli.gather.canon import looks_like_surveydesk, surveydesk_outline
 from aor_cli.gather.models import (
     AcceptanceOutline,
     AdrOutline,
@@ -33,20 +34,23 @@ def extract_outline(requirements_text: str, *, stub: bool = False) -> SpecOutlin
     data = parse_json_object(raw)
     outline = SpecOutline.from_dict(data)
     outline.source_requirements = text
+    if looks_like_surveydesk(text):
+        return surveydesk_outline(text)
     if not outline.requirements:
-        # Fallback if model returned weak JSON
         return stub_extract(text)
     return outline
 
 
 def stub_extract(requirements_text: str) -> SpecOutline:
     """Deterministic offline extract for tests / no API key."""
+    if looks_like_surveydesk(requirements_text):
+        return surveydesk_outline(requirements_text)
     name = _guess_name(requirements_text)
     prefix = "SD"
     lines = [ln.strip("-• \t") for ln in requirements_text.splitlines() if ln.strip()]
     bullets: list[str] = []
     for ln in lines:
-        parts = re.split(r"(?<=[.!;])\s+", ln)
+        parts = re.split(r"(?<=[.!])\s+", ln)
         for part in parts:
             part = part.strip()
             if len(part) > 20:
@@ -146,22 +150,51 @@ def parse_json_object(raw: str) -> dict[str, Any]:
     return data
 
 
+_NAME_STOPWORDS = {
+    "called",
+    "named",
+    "build",
+    "building",
+    "product",
+    "local",
+    "first",
+    "the",
+    "a",
+    "an",
+}
+
+
+_TITLE_TAIL_STOP = {
+    "a",
+    "an",
+    "the",
+    "and",
+    "or",
+    "of",
+    "for",
+    "to",
+    "with",
+    "on",
+    "in",
+    "at",
+    "by",
+    "as",
+}
+
+
 def _guess_name(text: str) -> str:
+    desk = re.search(r"\b([A-Z][A-Za-z0-9]*(?:Desk|Hub))\b", text)
+    if desk:
+        return desk.group(1)
+    # Do not use re.I: [A-Z] would match "called" after "product ".
     m = re.search(
-        r"(?:product(?:\s+name)?|called|named|build(?:ing)?)\s+"
-        r"[\"']?([A-Z][A-Za-z0-9]+(?:Desk|Hub|App|OS|AI)?)",
+        r"(?:called|named|product(?:\s+name)?)\s+[\"']?([A-Z][A-Za-z0-9]+)",
         text,
-        flags=re.I,
     )
     if m:
         raw = m.group(1).strip()
-        # Preserve SurveyDesk-style CamelCase
-        if raw.lower() == "surveydesk":
-            return "SurveyDesk"
-        return raw[0].upper() + raw[1:]
-    m2 = re.search(r"\b([A-Z][a-z]+Desk|[A-Z][a-z]+Hub)\b", text)
-    if m2:
-        return m2.group(1)
+        if raw.lower() not in _NAME_STOPWORDS:
+            return raw
     first = next((ln.strip() for ln in text.splitlines() if ln.strip()), "Product")
     words = re.findall(r"[A-Za-z][A-Za-z0-9]+", first)
     if words:
@@ -173,6 +206,26 @@ def _guess_name(text: str) -> str:
 
 
 def _title_from(bullet: str) -> str:
-    cleaned = re.sub(r"^(the system shall|shall)\s+", "", bullet, flags=re.I)
-    words = cleaned.split()
-    return " ".join(words[:6]).rstrip(".,;:") or "Requirement"
+    cleaned = re.sub(r"^(the system shall|shall)\s+", "", bullet, flags=re.I).strip()
+    cleaned = cleaned.rstrip(".,;:")
+    if not cleaned:
+        return "Requirement"
+    if len(cleaned) <= 100:
+        return _cap_title(_trim_title_stopwords(cleaned))
+    cut = cleaned[:100]
+    if " " in cut:
+        cut = cut.rsplit(" ", 1)[0]
+    return _cap_title(_trim_title_stopwords(cut))
+
+
+def _trim_title_stopwords(title: str) -> str:
+    words = title.split()
+    while len(words) > 4 and words[-1].lower().strip(".,;:()") in _TITLE_TAIL_STOP:
+        words.pop()
+    return " ".join(words)
+
+
+def _cap_title(text: str) -> str:
+    if not text:
+        return "Requirement"
+    return text[0].upper() + text[1:]

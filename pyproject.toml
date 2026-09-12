@@ -36,6 +36,9 @@ packages = ["src/aor_cli"]
 [tool.hatch.build.targets.wheel.sources]
 "src/aor_cli" = "aor_cli"
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/aor_cli/gather/templates" = "aor_cli/gather/templates"
+
 [tool.hatch.build.targets.sdist]
 include = ["src/aor_cli", "README.md", "pyproject.toml", "tests"]
 

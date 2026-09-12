@@ -1,0 +1,18 @@
+// SurveyDesk theme — copy into apps/android as ui/theme/Color.kt (+ Theme.kt).
+// Source of truth: brand/README.md
+package com.surveydesk.operator.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+val SdInk = Color(0xFF001838)
+val SdPrimary = Color(0xFF0878F8)
+val SdPrimaryPressed = Color(0xFF0068E8)
+val SdAccentGreen = Color(0xFF10A868)
+val SdAccentPurple = Color(0xFF7828F8)
+val SdRating = Color(0xFFF8B000)
+val SdMuted = Color(0xFF6B7C93)
+val SdBorder = Color(0xFFD0D8E4)
+val SdSurface = Color(0xFFFFFFFF)
+val SdSurfaceSubtle = Color(0xFFF0F4F8)
+val SdDanger = Color(0xFFE11D48)
+val SdSuccess = SdAccentGreen

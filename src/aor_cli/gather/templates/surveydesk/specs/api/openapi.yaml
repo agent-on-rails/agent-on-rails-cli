@@ -1,0 +1,297 @@
+openapi: 3.0.3
+info:
+  title: SurveyDesk Local API
+  version: 0.1.0
+  description: Local-first HTTP API for SurveyDesk (SQLite). Operator routes may require X-SurveyDesk-Token; public respond routes do not.
+servers:
+  - url: http://127.0.0.1:8787
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok:
+                    type: boolean
+                  service:
+                    type: string
+  /v1/surveys:
+    get:
+      summary: List surveys (operator)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+      responses:
+        "200":
+          description: Survey list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [surveys]
+                properties:
+                  surveys:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SurveySummary"
+    post:
+      summary: Create survey (operator)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSurveyRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Survey"
+  /v1/surveys/{surveyId}:
+    get:
+      summary: Get survey (operator)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+        - $ref: "#/components/parameters/SurveyId"
+      responses:
+        "200":
+          description: Survey
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Survey"
+    patch:
+      summary: Update survey metadata or FormSpec (operator)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+        - $ref: "#/components/parameters/SurveyId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSurveyRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Survey"
+        "409":
+          description: Structural edit not allowed while open
+  /v1/surveys/{surveyId}/open:
+    post:
+      summary: Start survey (draft/closed → open)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+        - $ref: "#/components/parameters/SurveyId"
+      responses:
+        "200":
+          description: Opened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Survey"
+  /v1/surveys/{surveyId}/close:
+    post:
+      summary: End survey (open → closed)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+        - $ref: "#/components/parameters/SurveyId"
+      responses:
+        "200":
+          description: Closed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Survey"
+  /v1/surveys/{surveyId}/results:
+    get:
+      summary: Aggregate results (operator)
+      parameters:
+        - $ref: "#/components/parameters/OperatorToken"
+        - $ref: "#/components/parameters/SurveyId"
+      responses:
+        "200":
+          description: Results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SurveyResults"
+  /v1/public/surveys/{slug}:
+    get:
+      summary: Public survey definition for respondent UI
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Public survey payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicSurvey"
+        "404":
+          description: Not found
+  /v1/public/surveys/{slug}/responses:
+    post:
+      summary: Submit anonymous response
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitResponseRequest"
+      responses:
+        "201":
+          description: Accepted
+        "403":
+          description: Survey not open
+        "409":
+          description: Survey not open (alternate)
+        "400":
+          description: Validation error
+  /v1/public/surveys/{slug}/results:
+    get:
+      summary: Public results when showPublicResults is true
+      parameters:
+        - $ref: "#/components/parameters/Slug"
+      responses:
+        "200":
+          description: Results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SurveyResults"
+        "403":
+          description: Public results disabled
+components:
+  parameters:
+    OperatorToken:
+      name: X-SurveyDesk-Token
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Shared demo token for operator routes (required when SURVEY_DESK_OPERATOR_TOKEN is set)
+    SurveyId:
+      name: surveyId
+      in: path
+      required: true
+      schema:
+        type: string
+    Slug:
+      name: slug
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    CreateSurveyRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        showPublicResults:
+          type: boolean
+          default: false
+    UpdateSurveyRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        showPublicResults:
+          type: boolean
+        formSpec:
+          $ref: "#/components/schemas/FormSpec"
+    SubmitResponseRequest:
+      type: object
+      required: [answers]
+      properties:
+        answers:
+          type: object
+          additionalProperties: true
+    SurveySummary:
+      type: object
+      required: [id, title, status, publicSlug]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        status: { type: string, enum: [draft, open, closed] }
+        publicSlug: { type: string }
+        updatedAt: { type: string }
+    Survey:
+      allOf:
+        - $ref: "#/components/schemas/SurveySummary"
+        - type: object
+          properties:
+            description: { type: string, nullable: true }
+            showPublicResults: { type: boolean }
+            formSpec: { $ref: "#/components/schemas/FormSpec" }
+            createdAt: { type: string }
+            openedAt: { type: string, nullable: true }
+            closedAt: { type: string, nullable: true }
+    PublicSurvey:
+      type: object
+      required: [title, status, formSpec, showPublicResults]
+      properties:
+        title: { type: string }
+        description: { type: string, nullable: true }
+        status: { type: string, enum: [draft, open, closed] }
+        formSpec: { $ref: "#/components/schemas/FormSpec" }
+        showPublicResults: { type: boolean }
+    FormSpec:
+      type: object
+      required: [version, fields]
+      properties:
+        version: { type: integer }
+        fields:
+          type: array
+          items:
+            $ref: "#/components/schemas/FormField"
+    FormField:
+      type: object
+      required: [id, type, label, required, order]
+      properties:
+        id: { type: string }
+        type:
+          type: string
+          enum: [short_text, long_text, single_choice, multi_choice, rating_1_5, yes_no]
+        label: { type: string }
+        required: { type: boolean }
+        order: { type: integer }
+        options:
+          type: array
+          items:
+            type: object
+            required: [id, label]
+            properties:
+              id: { type: string }
+              label: { type: string }
+    SurveyResults:
+      type: object
+      required: [surveyId, totalResponses, fields]
+      properties:
+        surveyId: { type: string }
+        totalResponses: { type: integer }
+        fields:
+          type: array
+          items:
+            type: object

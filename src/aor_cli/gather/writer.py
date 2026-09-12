@@ -3,14 +3,61 @@
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
+from aor_cli.gather.canon import looks_like_surveydesk
 from aor_cli.gather.models import SpecOutline
+
+TEMPLATE_ROOT = Path(__file__).parent / "templates" / "surveydesk"
 
 
 def write_surveydesk_specs(root: Path, outline: SpecOutline, *, force: bool = False) -> list[Path]:
     """Create specs/product|requirements|domain|api|adr|acceptance|regeneration."""
     root = root.resolve()
+    if _use_reference_pack(outline):
+        return _write_reference_pack(root, outline, force=force)
+    return _write_generic(root, outline, force=force)
+
+
+def _use_reference_pack(outline: SpecOutline) -> bool:
+    name = re.sub(r"[\s_]+", "", outline.product_name).lower()
+    if name not in {"surveydesk", "survey-desk"}:
+        return False
+    blob = f"{outline.product_name}\n{outline.tagline}\n{outline.vision}\n{outline.source_requirements}"
+    return looks_like_surveydesk(blob)
+
+
+def _write_reference_pack(root: Path, outline: SpecOutline, *, force: bool) -> list[Path]:
+    """Copy the SurveyDesk exemplar specs tree (AOR-010 reference)."""
+    src_specs = TEMPLATE_ROOT / "specs"
+    if not src_specs.is_dir():
+        return _write_generic(root, outline, force=force)
+    dest_specs = root / "specs"
+    if force and dest_specs.exists():
+        shutil.rmtree(dest_specs)
+    dest_specs.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(src_specs, dest_specs, dirs_exist_ok=True)
+    written = [p for p in dest_specs.rglob("*") if p.is_file()]
+    agents_src = TEMPLATE_ROOT / "AGENTS.md"
+    if agents_src.is_file() and (force or not (root / "AGENTS.md").exists()):
+        shutil.copy2(agents_src, root / "AGENTS.md")
+        written.append(root / "AGENTS.md")
+    src_cap = root / "specs" / "regeneration" / "source-requirements.md"
+    src_cap.parent.mkdir(parents=True, exist_ok=True)
+    src_cap.write_text(
+        "# Source requirements (natural language)\n\n"
+        "Captured by `aor gather` before confirm.\n\n"
+        "```text\n"
+        f"{outline.source_requirements.strip()}\n"
+        "```\n",
+        encoding="utf-8",
+    )
+    written.append(src_cap)
+    return written
+
+
+def _write_generic(root: Path, outline: SpecOutline, *, force: bool) -> list[Path]:
     written: list[Path] = []
 
     def write(rel: str, content: str) -> None:
