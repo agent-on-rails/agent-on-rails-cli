@@ -70,7 +70,11 @@ def test_stub_extract_and_writer(tmp_path: Path) -> None:
     assert "package.json" in rels
     assert ".gitignore" in rels
     pkg = json.loads((tmp_path / "package.json").read_text(encoding="utf-8"))
-    assert pkg["allowScripts"]["better-sqlite3"] is True
+    assert pkg["allowScripts"]["esbuild"] is True
+    assert "better-sqlite3" not in pkg.get("allowScripts", {})
+    assert "apps/web" in pkg["workspaces"]
+    assert "apps/api" not in pkg["workspaces"]
+    assert pkg["scripts"]["demo:api"] == "bash scripts/run-api.sh"
     assert "execute:specs" in pkg["scripts"]
     gitignore = (tmp_path / ".gitignore").read_text(encoding="utf-8")
     assert "apps/" in gitignore

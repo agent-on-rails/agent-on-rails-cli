@@ -92,26 +92,26 @@ def _ensure_root_package_json(root: Path, *, force: bool) -> list[Path]:
     if dest.exists() and not force:
         return []
     # Minimal scaffold so execute:specs / allowScripts exist before P5 finishes.
+    # API is Python (ADR-010) — not an npm workspace. Web is Next.js only.
     dest.write_text(
         "{\n"
         '  "name": "survey-desk",\n'
         '  "version": "0.1.0",\n'
         '  "private": true,\n'
-        '  "description": "SurveyDesk — local-first survey demo (API + web + native operators)",\n'
-        '  "workspaces": ["apps/api", "apps/web", "packages/*"],\n'
+        '  "description": "SurveyDesk — Python OpenAPI API + Next.js web + native operators",\n'
+        '  "workspaces": ["apps/web", "packages/*"],\n'
         '  "scripts": {\n'
         '    "demo": "bash scripts/demo.sh",\n'
-        '    "demo:api": "npm run dev -w @survey-desk/api",\n'
-        '    "demo:web": "npm run dev -w @surveydesk/web",\n'
+        '    "demo:api": "bash scripts/run-api.sh",\n'
+        '    "demo:web": "bash scripts/run-workspace.sh web",\n'
         '    "demo:ios": "bash scripts/demo-ios-simulator.sh",\n'
         '    "demo:android": "bash scripts/demo-android-emulator.sh",\n'
-        '    "test:acceptance": "npm --prefix tests test",\n'
+        '    "test:acceptance": "bash scripts/test-acceptance.sh",\n'
         '    "execute:specs": "bash specs/regeneration/run-parallel.sh",\n'
         '    "regen:parallel": "npm run execute:specs"\n'
         "  },\n"
         '  "engines": { "node": ">=20" },\n'
         '  "allowScripts": {\n'
-        '    "better-sqlite3": true,\n'
         '    "esbuild": true\n'
         "  }\n"
         "}\n",

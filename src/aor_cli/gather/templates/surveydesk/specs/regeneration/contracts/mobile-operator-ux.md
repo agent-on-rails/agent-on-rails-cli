@@ -74,7 +74,7 @@
 ### Root npm scripts
 
 - `demo`, `demo:ios`, `demo:android`, `test:acceptance` as today.
-- Root `allowScripts` for `better-sqlite3` and `esbuild`.
+- Root `allowScripts` for `esbuild` (web toolchain). API is Python (ADR-010).
 - `.gitignore` must list `apps/`, `packages/`, `tests/`.
 - `.env-example`: Android API note `http://10.0.2.2:8787` (emulator→host); copied web origin `http://127.0.0.1:3091` (host browser).
 

@@ -26,8 +26,8 @@ Do **not** invent a different product (analytics copilot, SaaS multi-tenant clou
 
 | Surface | Tech |
 |---------|------|
-| API | Node.js + TypeScript + SQLite |
-| Public web | React + Next.js |
+| API | Python 3.11+ + FastAPI + SQLite (OpenAPI contract — Java/any language OK; ADR-010) |
+| Public web | React + Next.js (Node is only this UI interface) |
 | Operator iOS | Swift + SwiftUI (iPhone **and** iPad Simulator, universal) |
 | Operator Android | Kotlin + Jetpack Compose (phone **and** tablet Emulator) |
 
@@ -44,15 +44,6 @@ Do **not** invent a different product (analytics copilot, SaaS multi-tenant clou
 
 `apps/`, `packages/`, and `tests/` are produced by regeneration and listed in `.gitignore`. Keep the repo **specs + brand + scripts** only. To wipe generated trees before a fresh rebuild, follow root **`CLEANUP.md`**, then `@specs/regeneration/prompts/REGENERATE.md`.
 
-## Shell / demo pitfalls (do not rediscover)
-
-See `specs/regeneration/contracts/shell-demo-pitfalls.md`:
-
-- macOS **bash 3.2** + `set -u`: never `$var…` (unicode ellipsis); never empty `"${arr[@]}"` without a length guard
-- `demo.sh` must **reuse** healthy 8787/3091 or free them — avoid EADDRINUSE
-- Root `allowScripts` for `better-sqlite3` / `esbuild`
-- Brand PNG/JPG must exist under `brand/` before Wave 1 (gather should seed `brand/README.md` + assets)
-
 ## Timebox (15 minutes)
 
 Prefer `@specs/regeneration/prompts/REGENERATE.md` in Cursor Agent (parallel P1–P6). Wall clock ≤ 15m (Wave 1 ≤ 10m, Wave 2 ≤ 3m, Wave 3 ≤ 2m). See `specs/regeneration/orchestrate-parallel.md`. Optional CLI: `npm run execute:specs`.
@@ -67,9 +58,11 @@ Prefer `@specs/regeneration/prompts/REGENERATE.md` in Cursor Agent (parallel P1�
 ## Commands (once implemented)
 
 ```bash
-npm install
 cp .env-example .env
-npm run demo           # API + web
+# API: Python 3.11+ (venv created by scripts/run-api.sh on first demo)
+# Web: Node.js >= 20
+npm install            # web workspace only
+npm run demo           # Python API + Next.js web
 npm run demo:ios       # iPhone + iPad Simulators
 npm run demo:android   # phone + tablet Emulators
 npm run test:acceptance

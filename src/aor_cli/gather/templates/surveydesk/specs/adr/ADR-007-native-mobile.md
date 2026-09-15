@@ -7,7 +7,7 @@ Operator mobile surfaces are **native**:
 - **iOS / iPadOS:** Swift + SwiftUI (`apps/ios`), universal app (`TARGETED_DEVICE_FAMILY = 1,2`), demoed on **iPhone and iPad Simulators**
 - **Android (phone + tablet):** Kotlin + Jetpack Compose (`apps/android`), adaptive UI (stack &lt; 600dp; sidebar ≥ 600dp), demoed on **phone and tablet Emulators**
 
-Public respondents remain on **React + Next.js** (`apps/web`). The local API remains Node + SQLite (`apps/api`).
+Public respondents remain on **React + Next.js** (`apps/web`). The local API is the OpenAPI + SQLite contract with a **Python** reference (`apps/api`, ADR-010).
 
 UX details that must survive regeneration: `specs/regeneration/contracts/mobile-operator-ux.md`.
 

@@ -22,7 +22,7 @@ Build the complete local-first stack so it matches `specs/regeneration/README.md
 
 | App | Stack | Role |
 |-----|--------|------|
-| `apps/api` | Node + TypeScript + SQLite | Local HTTP API |
+| `apps/api` | Python 3.11+ + FastAPI + SQLite | Local HTTP API (OpenAPI; language-neutral — ADR-010) |
 | `apps/web` | React + Next.js | Anonymous public respond |
 | `apps/ios` | Swift + SwiftUI | Operator → **iPhone + iPad** Simulators (universal) |
 | `apps/android` | Kotlin + Jetpack Compose | Operator → **phone + tablet** Emulators (adaptive) |
@@ -38,8 +38,8 @@ Do not invent a different product (no analytics-copilot / SaaS multi-tenant clou
 5. English UI; product name **SurveyDesk** only.
 6. Instant results: after submit, results fetch within **≤ 2s** reflects the new response.
 7. Match `specs/api/openapi.yaml` exactly for HTTP shapes.
-8. **Brand:** use `brand/surveydesk-full.jpg` (full + text) and `brand/surveydesk-logo.png` (logo only, **transparent** background for headers/nav/splash — never opaque JPG logo plate in chrome). Shared theme tokens from `brand/README.md` / `specs/product/brand.md` / ADR-008 on **every** UI (primary `#0878F8`, ink `#001838`). Copy assets into apps; do not delete originals under `brand/`. **If brand files are missing at Wave 1 start, create placeholders first** (do not leave P2/P3/P4 without assets).
-9. Prefer verbatim theme contracts: `specs/regeneration/contracts/theme.css.txt`, `Theme.swift.txt`, `Color.kt.txt`. **Mobile UX:** follow `specs/regeneration/contracts/mobile-operator-ux.md` (iPad/tablet sidebar, JDK 17, Android API via `10.0.2.2`, dual simulators). **Shell pitfalls:** follow `specs/regeneration/contracts/shell-demo-pitfalls.md` (bash 3.2, EADDRINUSE reuse, allowScripts).
+8. **Brand:** use `brand/surveydesk-full.jpg` (full + text) and `brand/surveydesk-logo.png` (logo only, **transparent** background for headers/nav/splash — never opaque JPG logo plate in chrome). Shared theme tokens from `brand/README.md` / `specs/product/brand.md` / ADR-008 on **every** UI (primary `#0878F8`, ink `#001838`). Copy assets into apps; do not delete originals under `brand/`.
+9. Prefer verbatim theme contracts: `specs/regeneration/contracts/theme.css.txt`, `Theme.swift.txt`, `Color.kt.txt`. **Mobile UX:** follow `specs/regeneration/contracts/mobile-operator-ux.md` (iPad/tablet sidebar, JDK 17, Android API via `10.0.2.2`, dual simulators).
 10. Author commits as `Iman Suherman <iman.suherman@gmail.com>` only if committing; never add Co-authored-by.
 11. **15-minute budget:** Wave 1 ≤ 10m (P1–P4 parallel), Wave 2 ≤ 3m, Wave 3 ≤ 2m. Android must match iOS build pace (ADR-009).
 12. **Do not commit generated trees.** `apps/`, `packages/`, and `tests/` are gitignored. Implement them on disk for the demo only. **Do** keep/update committed `scripts/` and `brand/surveydesk-logo.png`.
@@ -55,7 +55,6 @@ Do not invent a different product (no analytics-copilot / SaaS multi-tenant clou
 6. `specs/domain/*`, `specs/api/openapi.yaml`, `specs/adr/*`
 7. Phase prompts under `specs/regeneration/prompts/parallel/P1` … `P6` (follow their OWNED PATHS)
 8. `specs/regeneration/contracts/mobile-operator-ux.md` (P3/P4/P5)
-9. `specs/regeneration/contracts/shell-demo-pitfalls.md` (P5 — bash / demo.sh)
 
 ## Execution plan (parallel)
 

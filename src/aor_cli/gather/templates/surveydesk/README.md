@@ -15,8 +15,12 @@ stubs.
 | `.gitignore` | Ignores `apps/`, `packages/`, `tests/`, sqlite, `.env` |
 | `CLEANUP.md` | Wipe generated trees before re-regen |
 | `data/README.md` | SQLite location |
-| `package.json` | workspaces + `execute:specs` + `allowScripts` for better-sqlite3 |
+| `package.json` | web workspace + `execute:specs` + `allowScripts` for esbuild |
 | `.env-example` | API/web ports + Android `10.0.2.2` note |
+
+## Stack note (ADR-010)
+
+Reference API is **Python 3.11+ / FastAPI**. OpenAPI + SQLite is language-neutral — Java (or any language) can implement the same contract. Node/Next.js is only the public respondent UI.
 
 ## Lessons baked into regen contracts (avoid manual post-fixes)
 
@@ -24,7 +28,7 @@ See `specs/regeneration/contracts/shell-demo-pitfalls.md`:
 
 - bash 3.2 + `set -u`: `${var}...` not `$var…`; guard empty `"${arr[@]}"`
 - `demo.sh` reuses healthy 8787/3091 (no EADDRINUSE)
-- Root `allowScripts` for native modules
+- Root `allowScripts` for Next.js toolchain (`esbuild`)
 - Brand assets seeded at gather time
 
 Do not invent a different layout. Update this pack when the exemplar changes.

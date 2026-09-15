@@ -65,18 +65,18 @@ Device names like `iPad mini (A17 Pro)` contain parentheses. Extract UDIDs with 
 
 ### 6. Root `package.json` npm scripts / allowScripts
 
-- Workspaces: `apps/api`, `apps/web`, `packages/*` only (native apps are not npm workspaces).
+- Workspaces: `apps/web`, `packages/*` only (API is **Python** — not an npm workspace; native apps are not npm workspaces).
 - Keep `execute:specs` → `bash specs/regeneration/run-parallel.sh`.
-- Add root **`allowScripts`** so workspace installs can build native modules:
+- `demo:api` → `bash scripts/run-api.sh` (Python FastAPI reference, ADR-010).
+- Add root **`allowScripts`** so Next.js toolchain native modules can build:
 
 ```json
 "allowScripts": {
-  "better-sqlite3": true,
   "esbuild": true
 }
 ```
 
-Without this, `npm install` at the monorepo root may leave `better-sqlite3` unbuilt.
+Without this, `npm install` at the monorepo root may leave `esbuild` unbuilt.
 
 ### 7. `.gitignore` (P5 must ensure)
 

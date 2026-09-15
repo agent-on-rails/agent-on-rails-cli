@@ -53,7 +53,7 @@ Runs [`run-parallel.sh`](./run-parallel.sh) via Cursor Agent CLI (`agent login` 
 
 | App | Stack |
 |-----|--------|
-| API | Node.js + TypeScript + better-sqlite3 (or Drizzle) + Hono/Express |
+| API | Python 3.11+ + FastAPI + SQLite (stdlib) — OpenAPI contract is language-neutral (ADR-010) |
 | Web | React + Next.js App Router |
 | iOS | Swift + SwiftUI |
 | Android | Kotlin + Jetpack Compose |

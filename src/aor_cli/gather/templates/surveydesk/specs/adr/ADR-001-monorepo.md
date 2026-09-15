@@ -4,7 +4,7 @@
 
 Ship SurveyDesk as a single git monorepo with:
 
-- `apps/api` — local HTTP API + SQLite
+- `apps/api` — local HTTP API + SQLite (**Python** reference; see ADR-010)
 - `apps/web` — public respondent UI (React + Next.js)
 - `apps/ios` — operator app (Swift + SwiftUI)
 - `apps/android` — operator app (Kotlin + Jetpack Compose)
@@ -15,4 +15,4 @@ One-hour live build and Spec-Driven parallel regeneration need a single checkout
 
 ## Consequences
 
-Shared FormSpec contracts live in `specs/` (+ optional `packages/shared` for TS). Mobile platforms are native (see ADR-007), not Expo.
+Shared FormSpec / OpenAPI contracts live in `specs/` (+ optional `packages/shared` for web TS types). The API is not an npm workspace. Mobile platforms are native (see ADR-007), not Expo.

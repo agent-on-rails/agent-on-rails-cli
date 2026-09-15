@@ -1,0 +1,26 @@
+{
+  "name": "survey-desk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first SurveyDesk: Python OpenAPI API, Next.js public web, Swift iOS + Kotlin Android operator apps.",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "execute:specs": "bash specs/regeneration/run-parallel.sh",
+    "regen:parallel": "bash specs/regeneration/run-parallel.sh",
+    "demo": "bash scripts/demo.sh",
+    "demo:api": "bash scripts/run-api.sh",
+    "demo:web": "bash scripts/run-workspace.sh web",
+    "demo:ios": "bash scripts/demo-ios-simulator.sh",
+    "demo:android": "bash scripts/demo-android-emulator.sh",
+    "test:acceptance": "bash scripts/test-acceptance.sh"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "allowScripts": {
+    "esbuild": true
+  }
+}
