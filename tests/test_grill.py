@@ -216,6 +216,54 @@ def test_complete_requires_specs_approved(tmp_path: Path) -> None:
     assert session.stage == "DISCOVERY_COMPLETE"
 
 
+def test_complete_fails_when_specs_change_after_approve(tmp_path: Path) -> None:
+    """Approval SHA must match current specs/; stale approval blocks complete."""
+    runner = _run_to_specs_gate(tmp_path)
+    assert (
+        runner.invoke(
+            main,
+            ["grill", "approve", "specs", "--actor", "tester", "--root", str(tmp_path)],
+            catch_exceptions=False,
+        ).exit_code
+        == 0
+    )
+    session = load_session(tmp_path)
+    approved_sha = load_approval(tmp_path, session, "specs")["artifact_sha256"]
+
+    # Mutate pack after approval (v1 → v2)
+    target = tmp_path / "specs" / "README.md"
+    if not target.is_file():
+        # generic pack always has requirements/; pick any file under specs/
+        candidates = list((tmp_path / "specs").rglob("*.md"))
+        assert candidates, "expected specs files from grill emit"
+        target = candidates[0]
+    target.write_text(target.read_text(encoding="utf-8") + "\n# post-approval edit\n", encoding="utf-8")
+
+    r_stale = runner.invoke(
+        main, ["grill", "complete", "--root", str(tmp_path)], catch_exceptions=False
+    )
+    assert r_stale.exit_code != 0, r_stale.output
+    assert "STALE" in r_stale.output
+
+    # Re-approve current tree → complete PASS
+    assert (
+        runner.invoke(
+            main,
+            ["grill", "approve", "specs", "--actor", "tester", "--root", str(tmp_path)],
+            catch_exceptions=False,
+        ).exit_code
+        == 0
+    )
+    session = load_session(tmp_path)
+    new_sha = load_approval(tmp_path, session, "specs")["artifact_sha256"]
+    assert new_sha != approved_sha
+    r_ok = runner.invoke(
+        main, ["grill", "complete", "--root", str(tmp_path)], catch_exceptions=False
+    )
+    assert r_ok.exit_code == 0, r_ok.output
+    assert load_session(tmp_path).stage == "DISCOVERY_COMPLETE"
+
+
 def test_discover_alias(tmp_path: Path) -> None:
     runner = CliRunner()
     r = runner.invoke(

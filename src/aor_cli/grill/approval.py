@@ -120,7 +120,8 @@ def governing_specs_approved(project: Path, session: GrillSession) -> tuple[bool
     """
     Specs are approved when:
     - every AOR-style bundle is approved+, OR
-    - (no AOR bundles) durable grill pack approval evidence exists for artifact \"specs\".
+    - (no AOR bundles) durable grill pack approval evidence exists for artifact \"specs\"
+      **and** the current specs/ tree SHA-256 exactly matches the approved digest.
     """
     bundles = aor_bundle_specs_approved(project)
     if bundles is True:
@@ -133,10 +134,26 @@ def governing_specs_approved(project: Path, session: GrillSession) -> tuple[bool
         ]
         return False, f"spec bundles not APPROVED yet: {', '.join(pending)}"
     evidence = load_approval(project, session, "specs")
-    if evidence and evidence.get("artifact_sha256"):
-        return True, f"grill pack approval by {evidence.get('actor')} at {evidence.get('timestamp')}"
+    if not evidence or not evidence.get("artifact_sha256"):
+        return (
+            False,
+            "no AOR-style APPROVED specs and no grill pack approval — "
+            "run `aor grill approve specs` or `aor spec approve <ID>`",
+        )
+    specs_dir = project / "specs"
+    if not specs_dir.is_dir():
+        return False, "specs/ missing — cannot verify approval integrity"
+    current = sha256_tree(specs_dir)
+    approved = str(evidence["artifact_sha256"])
+    if current != approved:
+        return (
+            False,
+            "specs approval is STALE "
+            f"(approved {approved[:12]}…, current {current[:12]}…) — "
+            "re-run `aor grill approve specs` after reviewing the diff",
+        )
     return (
-        False,
-        "no AOR-style APPROVED specs and no grill pack approval — "
-        "run `aor grill approve specs` or `aor spec approve <ID>`",
+        True,
+        f"grill pack approval by {evidence.get('actor')} at {evidence.get('timestamp')} "
+        f"(sha256={current[:12]}…)",
     )
