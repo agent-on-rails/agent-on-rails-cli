@@ -14,6 +14,7 @@ from aor_cli.grill.stages import (
     GrillError,
     approve_architecture,
     approve_prd,
+    approve_specs,
     mark_discovery_complete,
     request_architecture_change,
     request_prd_change,
@@ -66,9 +67,9 @@ def _next_hint(session: GrillSession) -> str:
         "GATE_PRD_APPROVE": "aor grill approve prd --root <project>",
         "GATE_ARCHITECTURE_APPROVE": "aor grill approve architecture --root <project>",
         "GATE_SPECS_APPROVE": (
-            "Review specs/ drafts, then approve via normal lifecycle "
-            "(`aor spec approve` / human REVIEW→APPROVED). "
-            "Optional: `aor grill complete`"
+            "Approve governing specs: `aor grill approve specs` "
+            "(SurveyDesk pack) and/or `aor spec approve <ID>` (AOR bundles), "
+            "then `aor grill complete`"
         ),
         "DISCOVERY_COMPLETE": "Discovery done. Delivery planner lifecycle is AOR-003 (still draft).",
         "STAGE_PRD": "PRD stage in progress — re-run or wait for GATE_PRD_APPROVE",
@@ -201,38 +202,68 @@ def grill_approve() -> None:
 @grill_approve.command("prd")
 @click.option("--root", type=click.Path(path_type=Path, file_okay=False), default=None)
 @click.option("--session", "session_id", default=None)
+@click.option("--actor", default=None, help="Approver identity (default: AOR_APPROVER / user).")
 @click.pass_context
-def approve_prd_cmd(ctx: click.Context, root: Path | None, session_id: str | None) -> None:
+def approve_prd_cmd(
+    ctx: click.Context, root: Path | None, session_id: str | None, actor: str | None
+) -> None:
     """Approve PRD; Architect then authors ARCHITECTURE.md DRAFT."""
     console = ctx.obj["console"]
     project = _project(root)
     try:
         session = load_session(project, session_id)
-        session = approve_prd(project, session)
+        session = approve_prd(project, session, actor=actor)
     except (FileNotFoundError, GrillError) as exc:
         console.print(f"[red]{exc}[/red]")
         raise SystemExit(1) from exc
     _print_session(console, session)
-    console.print("[green]PRD APPROVED[/green] → architecture DRAFT written.")
+    console.print("[green]PRD APPROVED[/green] → architecture DRAFT written (+ approval evidence).")
     console.print(f"[dim]Next:[/dim] {_next_hint(session)}")
 
 
 @grill_approve.command("architecture")
 @click.option("--root", type=click.Path(path_type=Path, file_okay=False), default=None)
 @click.option("--session", "session_id", default=None)
+@click.option("--actor", default=None, help="Approver identity (default: AOR_APPROVER / user).")
 @click.pass_context
-def approve_architecture_cmd(ctx: click.Context, root: Path | None, session_id: str | None) -> None:
+def approve_architecture_cmd(
+    ctx: click.Context, root: Path | None, session_id: str | None, actor: str | None
+) -> None:
     """Approve architecture; Planner emits specs/ DRAFT pack."""
     console = ctx.obj["console"]
     project = _project(root)
     try:
         session = load_session(project, session_id)
-        session = approve_architecture(project, session)
+        session = approve_architecture(project, session, actor=actor)
     except (FileNotFoundError, GrillError) as exc:
         console.print(f"[red]{exc}[/red]")
         raise SystemExit(1) from exc
     _print_session(console, session)
-    console.print("[green]Architecture APPROVED[/green] → specs/ DRAFT pack written.")
+    console.print(
+        "[green]Architecture APPROVED[/green] → specs/ DRAFT pack written (+ approval evidence)."
+    )
+    console.print(f"[dim]Next:[/dim] {_next_hint(session)}")
+
+
+@grill_approve.command("specs")
+@click.option("--root", type=click.Path(path_type=Path, file_okay=False), default=None)
+@click.option("--session", "session_id", default=None)
+@click.option("--actor", default=None, help="Approver identity (default: AOR_APPROVER / user).")
+@click.pass_context
+def approve_specs_cmd(
+    ctx: click.Context, root: Path | None, session_id: str | None, actor: str | None
+) -> None:
+    """Approve governing specs pack (durable evidence); required before `grill complete`."""
+    console = ctx.obj["console"]
+    project = _project(root)
+    try:
+        session = load_session(project, session_id)
+        session = approve_specs(project, session, actor=actor)
+    except (FileNotFoundError, GrillError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise SystemExit(1) from exc
+    _print_session(console, session)
+    console.print("[green]Specs pack APPROVED[/green] (approval evidence recorded).")
     console.print(f"[dim]Next:[/dim] {_next_hint(session)}")
 
 
@@ -290,7 +321,7 @@ def request_architecture_change_cmd(
 @click.option("--session", "session_id", default=None)
 @click.pass_context
 def grill_complete(ctx: click.Context, root: Path | None, session_id: str | None) -> None:
-    """Mark discovery complete after specs gate (specs APPROVED is still human/lifecycle)."""
+    """Mark discovery complete only after governing specs are APPROVED."""
     console = ctx.obj["console"]
     project = _project(root)
     try:
