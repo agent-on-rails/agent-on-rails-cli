@@ -19,16 +19,14 @@ The **control plane** is the contract folder inside your project
 1. **Install** — `pipx install git+https://github.com/agent-on-rails/agent-on-rails-cli.git`
 2. **Open the TUI** — `aor` (mouse-friendly harness, like OpenCode / Claude Code)
 3. **Init** — in the TUI press Init, or `aor init my-product` (docs+specs, no app code).
-4. **Gather specs (optional)** — `aor gather run "…requirements…"` extracts a SurveyDesk-shaped
-   outline via OpenAI-compatible AI (default portal:
-   https://ai.dentalimplantsandveneers.com.au/), **asks you to confirm**, then writes
-   `specs/product|requirements|domain|api|adr|acceptance|regeneration/`.
-   Edit with `aor gather apply --edit`. Use `--stub` offline.
-5. **Write / refine a spec** — New spec in the TUI, or `aor spec new "Short title"`.
-6. **Human approve** — Approve in the TUI, or `aor spec approve PREFIX-001`.
-7. **Plan / Run** — packages a bounded task for Cursor, Claude, Codex, Gemini, …
-8. **Review** — human final-review handoff.
-9. **Evidence** — a spec is not DONE because an agent said so.
+4. **Gather specs (optional, fast path)** — `aor gather run "…requirements…"`.
+5. **Or grill (Discovery Team)** — `aor grill run --stub --file brief.md` then
+   `aor grill approve prd` → `aor grill approve architecture` (AOR-011). Alias: `aor discover`.
+6. **Write / refine a spec** — New spec in the TUI, or `aor spec new "Short title"`.
+7. **Human approve** — Approve in the TUI, or `aor spec approve PREFIX-001`.
+8. **Plan / Run** — packages a bounded task for Cursor, Claude, Codex, Gemini, …
+9. **Review** — human final-review handoff.
+10. **Evidence** — a spec is not DONE because an agent said so.
 
 Step-by-step (start → final review): https://github.com/agent-on-rails/agent-on-rails-cli/blob/main/docs/walkthrough.md
 
@@ -40,7 +38,8 @@ Step-by-step (start → final review): https://github.com/agent-on-rails/agent-o
 | --- | --- |
 | `aor` / `aor tui` | Terminal UI (default on a TTY) |
 | `aor init` | Bootstrap a project contract |
-| `aor gather` | NL requirements → confirm → SurveyDesk-shaped specs |
+| `aor gather` | NL requirements → confirm → SurveyDesk-shaped specs (fast path) |
+| `aor grill` / `aor discover` | Discovery AI Team: PRD → architecture → specs drafts (AOR-011) |
 | `aor spec` | Create, list, show, approve specs |
 | `aor plan` | Build a task from an approved spec |
 | `aor run` | Package (and later execute) a bounded task |
